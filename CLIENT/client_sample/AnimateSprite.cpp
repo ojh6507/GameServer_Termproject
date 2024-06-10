@@ -1,1 +1,32 @@
 #include "AnimateSprite.h"
+
+AnimateSprite::AnimateSprite(sf::Texture& texture, sf::Vector2u imgCount, float switchTime)
+	:imgCount{ imgCount }, switchTime{ switchTime }, totalTime{}
+{
+	currentImage.x = 0;
+	uvRect.width = texture.getSize().x / float(imgCount.x);
+	uvRect.height = texture.getSize().y / float(imgCount.y);
+}
+
+void AnimateSprite::Update(int row, float deltTime, bool faceRight)
+{
+	currentImage.y = row;
+	totalTime += deltTime;
+	if (totalTime >= switchTime) {
+		totalTime -= switchTime;
+		++currentImage.x;
+		if (currentImage.x >= imgCount.x) {
+			currentImage.x = 0;
+		}
+	}
+
+	uvRect.top = currentImage.y * uvRect.height;
+	if (faceRight) {
+		uvRect.left = currentImage.x * uvRect.width;
+		uvRect.width = abs(uvRect.width);
+	}
+	else {
+		uvRect.left = (currentImage.x + 1) * abs(uvRect.width);
+		uvRect.width = -abs(uvRect.width);
+	}
+}

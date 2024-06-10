@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="AnimateSprite.cpp" />
     <ClCompile Include="client.cpp" />
+    <ClCompile Include="Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="chess2.png" />
