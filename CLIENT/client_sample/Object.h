@@ -74,25 +74,42 @@ protected:
 	std::chrono::system_clock::time_point m_mess_end_time;
 };
 
+
+enum STAT {
+	IDLE,
+	WALK,
+	RUN,
+	ATTACK_1,
+	ATTACK_2
+};
 class Character : public OBJECT{
 
 public:
 	Character(){}
 	Character(sf::Texture& t, sf::Vector2u imgCount, float switchTime, float speed);
+	~Character();
 public:
 	virtual void move(int x, int y) override;
 	virtual void Update(float deltaTime, int dir) override;
 	virtual void Draw(sf::RenderWindow& window) override;
-
-public:
+	void ChangeState(STAT s);
+	void updateCharacterState(sf::Vector2f& movement, float deltaTime, int dir);
+protected:
 	sf::Vector2f pos;
 	sf::RectangleShape body;
 	AnimateSprite animation;
 	unsigned int row;
 	float speed;
 	bool faceRight;
-
-
+	bool isSpriteUpdated{};
+private:
+	sf::Texture* idleTexture{};
+	sf::Texture* walkTexture{};
+	sf::Texture* attack_1Texture{};
+	sf::Texture* attack_2Texture{};
+	STAT stat = STAT::IDLE;
+	STAT new_stat = STAT::IDLE;
+	
 };
 
 class BoardBlock :public OBJECT
@@ -104,7 +121,7 @@ public:
 	virtual void move(int x, int y) override;
 	virtual void Update(float deltaTime, int dir) override;
 	virtual void Draw(sf::RenderWindow& window) override;
-
+	
 public:
 	sf::Vector2f pos;
 	sf::RectangleShape body;

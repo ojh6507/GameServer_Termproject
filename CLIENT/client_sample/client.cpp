@@ -24,14 +24,14 @@ void client_initialize()
 	board = new sf::Texture;
 	pieces = new sf::Texture;
 	board->loadFromFile("chessmap.bmp");
-	pieces->loadFromFile("mario_walk.png");
+	pieces->loadFromFile("Assets/Samurai/Idle.png");
 	if (false == g_font.loadFromFile("cour.ttf")) {
 		cout << "Font Loading Error!\n";
 		exit(-1);
 	}
 	white_tile = BoardBlock{ *board, sf::Vector2u(1,1), 0,  0,0 };
 	black_tile = BoardBlock{ *board, sf::Vector2u(1,1), 0, 5,5 };
-	avatar = Character{ *pieces, sf::Vector2u(25,1), 0.01f,120.f };
+	avatar = Character{ *pieces, sf::Vector2u(6,1), 0.1f,120.f };
 	avatar.move(4, 4);
 }
 
@@ -242,7 +242,7 @@ int main()
 	{
 		deltaTime = clock.restart().asSeconds();
 
-		sf::Event event;
+		sf::Event event{};
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -262,11 +262,18 @@ int main()
 				case sf::Keyboard::Down:
 					direction = 1;
 					break;
+				case sf::Keyboard:: Q:
+					direction = 4;
+					break;
+				case sf::Keyboard::W:
+					direction = 5;
+					break;
+
 				case sf::Keyboard::Escape:
 					window.close();
 					break;
 				}
-				if (-1 != direction) {
+				if (-1 != direction && direction <= 3) {
 					CS_MOVE_PACKET p;
 					p.size = sizeof(p);
 					p.type = CS_MOVE;
@@ -281,6 +288,7 @@ int main()
 		}
 		
 		avatar.Update(deltaTime, direction);
+
 		window.clear(sf::Color(150,150, 150));
 		client_main();
 		avatar.Draw(*g_window);

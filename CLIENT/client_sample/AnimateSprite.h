@@ -7,6 +7,7 @@ public:
 	AnimateSprite() { currentImage.x = 0; }
 public:
 	void Update(int row, float deltTime, bool faceRight);
+	void ChangeSprite(sf::Texture& texture, sf::Vector2u imgCount, float switchTime);
 public:
 	sf::IntRect uvRect;
 private:

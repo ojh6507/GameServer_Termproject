@@ -30,3 +30,13 @@ void AnimateSprite::Update(int row, float deltTime, bool faceRight)
 		uvRect.width = -abs(uvRect.width);
 	}
 }
+
+void AnimateSprite::ChangeSprite(sf::Texture& texture, sf::Vector2u imgCount, float switchTime)
+{
+	currentImage.x = 0;
+	uvRect.width = texture.getSize().x / float(imgCount.x);
+	uvRect.height = texture.getSize().y / float(imgCount.y);
+	this->imgCount = imgCount;
+	this->switchTime = switchTime; 
+	this->totalTime = 0;
+}

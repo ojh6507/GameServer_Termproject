@@ -3,12 +3,26 @@
 Character::Character(sf::Texture& t, sf::Vector2u imgCount, float switchTime, float speed)
 	:animation(t, imgCount, switchTime), speed{ speed }, row{}, faceRight{}
 {
-	body.setSize(sf::Vector2f(100, 100));
+	body.setSize(sf::Vector2f(150, 150));
 	body.setPosition(4,4);
 	body.setTexture(&t);
 	t.setRepeated(true);
 
+	idleTexture = new sf::Texture;
+	walkTexture = new sf::Texture;
+	attack_1Texture = new sf::Texture;
+	attack_2Texture = new sf::Texture;
+
+	idleTexture->loadFromFile("Assets/Samurai/Idle.png");
+	walkTexture->loadFromFile("Assets/Samurai/Walk.png");
+	attack_1Texture->loadFromFile("Assets/Samurai/Attack_1.png");
+	attack_2Texture->loadFromFile("Assets/Samurai/Attack_2.png");
+
+	isSpriteUpdated = false;
 }
+
+Character::~Character()
+{}
 
 void Character::move(int x, int y)
 {
@@ -20,24 +34,31 @@ void Character::move(int x, int y)
 void Character::Update(float deltaTime, int dir)
 {
 	sf::Vector2f movement(0.f, 0.f);
-	switch (dir)
-	{
-	case 0:
-		movement.y -= speed * deltaTime;
-		break;
-	case 1:
-		movement.y += speed * deltaTime;
-		break;
-	case 2:
-		movement.x -= speed * deltaTime;
-		break;
-	case 3:
-		movement.x += speed * deltaTime;
-		break;
-	default:
-
-		break;
+	if (isSpriteUpdated) {
+		if (stat == STAT::WALK) {
+			animation.ChangeSprite(*walkTexture, sf::Vector2u(8, 1), 0.1f);
+			body.setTexture(walkTexture);
+			walkTexture->setRepeated(true);
+		}
+		if (stat == STAT::IDLE) {
+			animation.ChangeSprite(*idleTexture, sf::Vector2u(6, 1), 0.1f);
+			body.setTexture(idleTexture);
+			idleTexture->setRepeated(true);
+		}
+		if (stat == STAT::ATTACK_1) {
+			animation.ChangeSprite(*attack_1Texture, sf::Vector2u(6, 1), 0.05f);
+			body.setTexture(attack_1Texture);
+			attack_1Texture->setRepeated(true);
+		}
+		if (stat == STAT::ATTACK_2) {
+			animation.ChangeSprite(*attack_2Texture, sf::Vector2u(4, 1), 0.05f);
+			body.setTexture(attack_2Texture);
+			attack_2Texture->setRepeated(true);
+		}
+		isSpriteUpdated = false;
 	}
+	
+	updateCharacterState(movement, deltaTime, dir);
 	if (movement.x == 0) {
 		row = 0;
 	}
@@ -51,6 +72,44 @@ void Character::Update(float deltaTime, int dir)
 	body.setTextureRect(animation.uvRect);
 	pos = movement;
 	body.move(movement);
+}
+void Character::updateCharacterState(sf::Vector2f& movement, float deltaTime, int dir)
+{
+
+	switch (dir) {
+	case 2:
+		new_stat = STAT::WALK;
+		movement.x -= speed * deltaTime;
+		break;
+	case 3:
+		new_stat = STAT::WALK;
+		movement.x += speed * deltaTime;
+		break;
+	case 0:
+		new_stat = STAT::WALK;
+		movement.y -= speed * deltaTime;
+		break;
+	case 1:
+		new_stat = STAT::WALK;
+		movement.y += speed * deltaTime;
+		break;
+	case 4:
+		new_stat = STAT::ATTACK_1;
+		break;
+	case 5:
+		new_stat = STAT::ATTACK_2;
+		break;
+	default:
+		new_stat = STAT::IDLE;
+		break;
+	}
+	
+	if (new_stat != stat) {
+		isSpriteUpdated = true;
+		stat = new_stat;
+	}
+
+
 }
 
 void Character::Draw(sf::RenderWindow& window)
